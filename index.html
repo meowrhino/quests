@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Misiones Meowrhinowescas</title>
+  <style>
+    /* Fondo de corcho gamificado */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #A0522D;
+      background-image: url('https://www.transparenttextures.com/patterns/corkboard.png');
+      background-size: cover;
+      color: #333;
+    }
+    header {
+      text-align: center;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.8);
+      border-bottom: 2px solid #ccc;
+      margin-bottom: 20px;
+    }
+    header h1 {
+      font-size: 2.5em;
+      margin: 0;
+    }
+    header p {
+      font-size: 1.2em;
+      margin: 0;
+    }
+    /* Sección del formulario para agregar misiones */
+    #new-mission-form {
+      max-width: 600px;
+      margin: 20px auto;
+      background: rgba(255,255,255,0.9);
+      padding: 20px;
+      border-radius: 10px;
+    }
+    #new-mission-form input, #new-mission-form textarea, #new-mission-form select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    #new-mission-form label {
+      font-weight: bold;
+    }
+    .btn {
+      display: inline-block;
+      padding: 5px 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #3498db;
+      color: white;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #2980b9;
+    }
+    /* Tablón de misiones estilo "notas" pegadas */
+    #mission-board {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+    }
+    .mission-card {
+      width: 250px;
+      background: #fff;
+      padding: 15px;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+      position: relative;
+      transform: rotate(-2deg);
+    }
+    .mission-card:nth-child(even) {
+      transform: rotate(2deg);
+    }
+    .mission-card h3 {
+      margin-top: 0;
+    }
+    .mission-card p {
+      font-size: 0.9em;
+    }
+    .mission-deadline {
+      font-size: 0.8em;
+      color: #777;
+    }
+    .mission-state {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Misiones Meowrhinowescas</h1>
+    <p>¡Acepta desafíos y completa misiones con estilo felino!</p>
+  </header>
+
+  <section id="new-mission-form">
+    <h2>Agregar nueva misión</h2>
+    <form id="missionForm">
+      <label for="title">Título:</label>
+      <input type="text" id="title" name="title" placeholder="Ej: Diseñar web meow" required>
+
+      <label for="description">Descripción:</label>
+      <textarea id="description" name="description" rows="3" placeholder="Describe la misión" required></textarea>
+
+      <label for="deadline">Fecha límite:</label>
+      <input type="date" id="deadline" name="deadline" required>
+
+      <label for="state">Estado inicial:</label>
+      <select id="state" name="state">
+        <option value="esperando">⏳ Esperando</option>
+        <option value="aceptado">✅ Aceptado</option>
+        <option value="en_proceso">🔨 En Proceso</option>
+        <option value="en_revision">🔍 En Revisión</option>
+        <option value="rechazado">❌ Rechazado</option>
+      </select>
+
+      <button type="submit" class="btn">Agregar Misión</button>
+    </form>
+  </section>
+
+  <section id="mission-board">
+    <!-- Aquí se mostrarán las misiones -->
+  </section>
+
+  <script>
+    // Array inicial de misiones (simulación de datos)
+    let missions = [
+      {
+        id: 1,
+        title: "Diseñar página web",
+        description: "Crear una web responsive con estilo meowrhinowesca.",
+        deadline: "2025-05-01",
+        state: "esperando"
+      },
+      {
+        id: 2,
+        title: "Ilustración de personaje",
+        description: "Dibujar un personaje con temática de gato y fantasía.",
+        deadline: "2025-04-15",
+        state: "esperando"
+      }
+    ];
+
+    // Etiquetas con emojis para cada estado
+    const stateLabels = {
+      esperando: "⏳ Esperando",
+      aceptado: "✅ Aceptado",
+      en_proceso: "🔨 En Proceso",
+      en_revision: "🔍 En Revisión",
+      rechazado: "❌ Rechazado"
+    };
+
+    // Función para renderizar las misiones en el tablón
+    function renderMissions() {
+      const board = document.getElementById("mission-board");
+      board.innerHTML = "";
+      missions.forEach(mission => {
+        const card = document.createElement("div");
+        card.className = "mission-card";
+        card.innerHTML = `
+          <h3>${mission.title}</h3>
+          <p>${mission.description}</p>
+          <p class="mission-deadline">Fecha límite: ${mission.deadline}</p>
+          <p class="mission-state">Estado: ${stateLabels[mission.state]}</p>
+          <button class="btn" onclick="changeState(${mission.id})">Cambiar Estado</button>
+        `;
+        board.appendChild(card);
+      });
+    }
+
+    // Función para cambiar el estado de la misión de forma cíclica
+    function changeState(id) {
+      const mission = missions.find(m => m.id === id);
+      if (!mission) return;
+      const states = ["esperando", "aceptado", "en_proceso", "en_revision", "rechazado"];
+      let currentIndex = states.indexOf(mission.state);
+      mission.state = states[(currentIndex + 1) % states.length];
+      renderMissions();
+    }
+
+    // Manejo del formulario para agregar nuevas misiones
+    document.getElementById("missionForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const title = document.getElementById("title").value;
+      const description = document.getElementById("description").value;
+      const deadline = document.getElementById("deadline").value;
+      const state = document.getElementById("state").value;
+      const newMission = {
+        id: missions.length ? missions[missions.length - 1].id + 1 : 1,
+        title,
+        description,
+        deadline,
+        state
+      };
+      missions.push(newMission);
+      renderMissions();
+      this.reset();
+    });
+
+    // Función para actualizar las misiones desde un API externo
+    function updateMissionsFromExternal() {
+      // Aquí podrías usar fetch para obtener datos externos y actualizar el array "missions".
+      // Ejemplo:
+      // fetch('https://api.tuservidor.com/missions')
+      //   .then(response => response.json())
+      //   .then(data => {
+      //     missions = data;
+      //     renderMissions();
+      //   })
+      //   .catch(error => console.error('Error al actualizar misiones:', error));
+    }
+
+    // Renderizamos las misiones al cargar la página
+    renderMissions();
+
+    // (Opcional) Actualizar las misiones cada 60 segundos
+    // setInterval(updateMissionsFromExternal, 60000);
+  </script>
+</body>
+</html>
